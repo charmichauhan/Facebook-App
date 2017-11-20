@@ -1,8 +1,7 @@
 import React from 'react';
-// import { Link } from 'react-router';
 import {Field, reduxForm } from 'redux-form';
- import { connect } from 'react-redux';
- import {update, registerImage} from "../actions/userActions"
+import { connect } from 'react-redux';
+import {update, getById} from "../actions/userActions"
 import {bindActionCreators} from 'redux'
 import ReactAvatarEditor from 'react-avatar-editor'
 import {Card, CardTitle} from 'material-ui/Card';
@@ -12,8 +11,8 @@ import moment from 'moment';
 import {reactLocalStorage} from 'reactjs-localstorage';
 import {persistStore} from 'redux-persist'
 import  store  from 'redux'
-
 //import 'react-datepicker/dist/react-datepicker.css';
+// import { Link } from 'react-router';
 
 class EditProfile extends React.Component {
     constructor(props) {
@@ -24,9 +23,9 @@ class EditProfile extends React.Component {
                 password: '',
                 email:'',
                 role: '',
-               // image:'',
+                image:'',
             },
-            image:'http://www.startupremarkable.com/wp-content/uploads/2015/02/a-book-a-week-image.jpg',
+            images:'',
             submitted: false,
             startDate: moment(),
             allowZoomOut: false,
@@ -39,14 +38,23 @@ class EditProfile extends React.Component {
             height: 200
         };
         this.handleChange = this.handleChange.bind(this);
+        this.handleChange1 = this.handleChange1.bind(this);
+        this.onChange = this.onChange.bind(this);
+
         this.handleSubmit = this.handleSubmit.bind(this);
     }
-    componentDidMount(){
+    componentDidMount(_id){
         // persistStore(store, {}, () => {
-            console.log('Oldimage', this.state.image)
-      //  })
+        const {user} = this.props
+        console.log('user', user)
+        debugger
+            console.log('Oldimage', user.user.image)
+        //  })
     }
-    handleChange(date) {
+    handleUser(_id){
+        return (e) => getById(_id);
+    }
+    handleChange1(date) {
         this.setState({
             startDate: date
         });
@@ -61,10 +69,11 @@ class EditProfile extends React.Component {
         //         [name]: value
         //     }
         // });
-         this.setState({image: e.target.files[0]})
-         var images = e.target.files[0]
-         console.log('image',images)
-         this.props.registerImage(images)
+        // this.setState({images: e.target.files[0]})
+        this.state.images = e.target.files[0]
+        // var images = e.target.files[0]
+         console.log('image',this.state.images)
+       // user.user.image = images
     }
     // handleSave =data => {
     //     debugger
@@ -120,17 +129,36 @@ class EditProfile extends React.Component {
             muiTheme: getMuiTheme()
         }
     }
-    // onChange (event) {
-    //     this.setState({role: event.target.value});
-    // }
-    handleSubmit() {
-        // console.log('submit', this.state.submitted)
-        // this.setState({ submitted: true })
-        // console.log('submit', this.state.submitted)
-        // if(this.state.submitted === true) {
-        //     this.props.history.push('/dashboard')
-        // }
-        this.props.history.push('/dashboard')
+    onChange (event) {
+        this.setState({role: event.target.value});
+    }
+    handleSubmit(event) {
+        event.preventDefault();
+        debugger
+        this.setState({ submitted: true });
+        console.log(this.state.user)
+        const { user } = this.state;
+         if (user.username && user.password && user.email && user.role && user.image) {
+            debugger
+           update(user);
+        }
+    }
+    //updateUser() {
+        // const {user} = this.props;
+        // var persons = JSON.parse(localStorage.user);
+        // console.log('persons', persons)
+        // console.log('user', user.user)
+       // localStorage.setItem("user", JSON.stringify(user));  //put the object back
+   // }
+    handleChange(event) {
+        const { name, value } = event.target;
+        const { user } = this.state;
+        this.setState({
+            user: {
+                ...user.user,
+                [name]: value
+            }
+        });
     }
     render() {
         const user = reactLocalStorage.getObject('user');
@@ -141,7 +169,7 @@ class EditProfile extends React.Component {
         //         console.log('---',user.user.username)
         //     }
         // }
-        const {url} = this.props;
+        const {url, users} = this.props;
         const {  submitted } = this.state;
         return (
                 <div className="container">
@@ -152,8 +180,17 @@ class EditProfile extends React.Component {
                             <ReactAvatarEditor
                                 //onSave={this.onClickSave}
                                 ref={this.setEditorRef}
-                                image={this.state.image || ''}
+                                image={this.state.images || user.user.image}
                             />
+                            {users.items &&
+                            <ul>
+                                {users.items.map((user, index) =>
+                                    <div key={user._id}>
+                                        {this.handleUser(user._id)}
+                                    </div>
+                                )}
+                            </ul>
+                            }
                             <br/>
                             <p> To change profile image, click</p>
                             <input name='newImage' type='file' onChange={this.handleNewImage}/>
@@ -165,7 +202,7 @@ class EditProfile extends React.Component {
 
                                     <div className={'form-group' + (submitted && !user.user.username ? ' has-error' : '')}>
                                         <label htmlFor="username">Username</label>
-                                            <input type="text" className="form-control" name="username" value={user.user.username}/>
+                                            <input type="text" className="form-control" name="username" value={user.user.username } onChange={this.handleChange}/>
                                             {submitted && !user.user.username &&
                                             <div className="help-block">Username is required</div>
                                             }
@@ -173,7 +210,7 @@ class EditProfile extends React.Component {
 
                                     <div className={'form-group' + (submitted && !user.user.email ? ' has-error' : '')}>
                                         <label htmlFor="email">Email</label>
-                                        <input ref="email" type="email" className="form-control" name="email"  value={user.user.email} />
+                                        <input ref="email" type="email" className="form-control" name="email"  value={user.user.email} onChange={this.handleChange}/>
                                         {submitted && !user.user.email &&
                                         <div className="help-block">Email is required</div>
                                         }
@@ -193,7 +230,7 @@ class EditProfile extends React.Component {
                                             className="setheight"
                                             fixedHeight = {true}
                                             selected={this.state.startDate}
-                                            onChange={this.handleChange}
+                                            onChange={this.handleChange1}
                                         />
                                     </div>
 
@@ -201,6 +238,8 @@ class EditProfile extends React.Component {
                                         <button className="btn btn-primary">Update</button>
                                         <button className="btn btn-red">Cancel</button>
                                     </div>
+
+                                    {/*<button onClick={this.updateUser} >User</button>*/}
                             </form>
                         </div>
                     </Card>
@@ -224,6 +263,6 @@ function mapStateToProps(state) {
     };
 }
 function mapDispatchToProps(dispatch) {
-    return bindActionCreators({update, registerImage}, dispatch);
+    return bindActionCreators({update, getById, update}, dispatch);
 }
-export default connect(mapStateToProps, {update, registerImage})(EditProfile)
+export default connect(mapStateToProps, {update, getById, update})(EditProfile)

@@ -79,24 +79,6 @@ export const register=(user)=> {
     function failure(error) { return { type: userConstants.GETALL_FAILURE, error } }
 }
 
-export const getImage=()=> {
-    return dispatch => {
-        dispatch(getImage());
-        debugger
-        userService.getImage()
-            .then(
-                image => {
-                    dispatch(success(image)),
-                        dispatch(alertActions.success('Get image successfully'));
-                },
-                error => dispatch(failure(error))
-            );
-    };
-    function request() { return { type: userConstants.GET_IMAGE_REQUEST } }
-    function success(image) { return { type: userConstants.GET_IMAGE_SUCCESS, image } }
-    function failure(error) { return { type: userConstants.GET_IMAGE_FAILURE, error } }
-}
-
 export const getById=(_id)=> {
     return dispatch => {
         dispatch(request(_id));
@@ -153,27 +135,6 @@ export const Delete=(_id)=> {
     function request(_id) { return { type: userConstants.DELETE_REQUEST, _id } }
     function success(_id) { return { type: userConstants.DELETE_SUCCESS, _id } }
     function failure(_id, error) { return { type: userConstants.DELETE_FAILURE, _id, error } }
-}
-
-export const registerImage=(image)=> {
-    return dispatch => {
-        dispatch(request(image));
-        debugger
-        userService.registerImage(image)
-            .then(
-                user => {
-                    dispatch(success());
-                    dispatch(alertActions.success('Image Saved successfully'));
-                },
-                error => {
-                    dispatch(failure(error));
-                    dispatch(alertActions.error(error));
-                }
-            );
-    };
-    function request(image) { return { type: userConstants.REGISTER_IMG_REQUEST, image } }
-    function success(image) { return { type: userConstants.REGISTER_IMG_SUCCESS, image } }
-    function failure(error) { return { type: userConstants.REGISTER_IMG_FAILURE, error } }
 }
 
 export const likes=(counts)=>{

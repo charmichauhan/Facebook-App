@@ -87,7 +87,7 @@ class Dashboard extends React.Component {
                     <Tab
                         styles={styles.headline}
                          icon= { <Avatar
-                             src="http://www.startupremarkable.com/wp-content/uploads/2015/02/a-book-a-week-image.jpg" />}
+                             src={user.user.image} />}
                         label={user.user.username}
                     >
                         <Profile/>

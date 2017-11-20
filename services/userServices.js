@@ -8,8 +8,6 @@ export const userService = {
      getById,
     update,
     Delete,
-    registerImage,
-    getImage,
     likes,
     comments
 };
@@ -56,21 +54,6 @@ function register(user) {
     return fetch('http://localhost:5000/data', requestOptions).then(handleResponse);
 }
 
-function registerImage(image) {
-    const img = image.name
-    const requestOptions = {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
-        body: JSON.stringify(img)
-    };
-    // var request = _.extend({
-    //     body: JSON.stringify(image)
-    // }, headers)
-    debugger
-    console.log('----', img)
-    return fetch('http://localhost:5000/images/' + img, requestOptions).then(handleResponse)
-}
-
 function getAll() {
     const requestOptions = {
         method: 'GET',
@@ -78,15 +61,6 @@ function getAll() {
     };
     debugger
     return fetch('http://localhost:5000/data', requestOptions).then(handleResponse);
-}
-
-function getImage() {
-    const requestOptions = {
-        method: 'GET',
-        headers: authHeader()
-    };
-    debugger
-    return fetch('http://localhost:5000/images', requestOptions).then(handleResponse);
 }
 
 function getById(_id) {

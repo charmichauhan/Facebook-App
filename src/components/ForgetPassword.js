@@ -1,5 +1,9 @@
 import React, { Component, PropTypes } from 'react';
+import {reactLocalStorage} from 'reactjs-localstorage';
 import { Field, reduxForm } from 'redux-form';
+//import {getById} from '.././actions/userActions'
+import {bindActionCreators} from 'redux'
+import { connect } from 'react-redux';
 
 class ForgetPassword extends Component {
 
@@ -10,9 +14,19 @@ class ForgetPassword extends Component {
                 new_password: '',
             submitted: false
         };
+        this.handleSubmit = this.handleSubmit.bind(this)
     }
-    handleSubmit() {
-        alert('Your password changed successfully')
+
+    handleSubmit(event) {
+        //alert('Your password changed successfully')
+        event.preventDefault();
+        this.setState({ submitted: true });
+        debugger
+        if (this.state.new_password ) {
+            debugger
+            this.props.history.push('/login')
+        }
+
         // this.setState({ submitted: true })
         // console.log("Fdg")
         // if(this.state.submitted === true) {
@@ -22,6 +36,7 @@ class ForgetPassword extends Component {
     render() {
 
         const { old_password, new_password ,submitted} = this.state;
+        const user = reactLocalStorage.getObject('user');
         return (
             <div className="col-md-6 col-md-offset-3">
                 <h2>Forgot Password?</h2>
@@ -29,7 +44,7 @@ class ForgetPassword extends Component {
 
                                 <label htmlFor="old_password">Old password</label>
                                 <div className={'form-group' + (submitted && !old_password ? ' has-error' : '')}>
-                                    <input type="password" className="form-control" name="old_password" />
+                                    <input type="text" value= {user.user.password} className="form-control" name="old_password" />
                                     {submitted && !old_password &&
                                     <div className="help-block">Password is required</div>
                                     }
@@ -62,16 +77,18 @@ function validate(values) {
     }
     return errors;
 }
+// function mapStateToProps(state) {
+//     const {  users, authentication } = state;
+//     const { user } = authentication;
+//     return {
+//         user,
+//         users
+//     };
+// }
+// function mapDispatchToProps(dispatch) {
+//     return bindActionCreators({ getById}, dispatch);
+// }
+//export default connect(mapStateToProps, mapDispatchToProps)(ForgetPassword);
 
-function mapStateToProps({user}) {
-    return {
-        user: user,
-
-    }
-}
-
-
-
-export default ForgetPassword;
-
+export default ForgetPassword
 

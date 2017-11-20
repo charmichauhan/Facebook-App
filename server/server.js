@@ -84,15 +84,24 @@ var upload = multer({
 mongoose.connect('mongodb://localhost:27017/FBapp');
 var User=require('.././model/user.js');
 
-app.post('/data', function(req, res) {
+app.post('/data',upload.any('originalname'), function(req, res) {
     var user = req.body;
     const newUser = new User(user);
     // Generate a 32 character alpha-numeric token:
     var token = randtoken.generate(32);
-     newUser.image = '';
+     //newUser.image = '';
     newUser.token = token;
     console.log(newUser);
+    /////******* upload img*********
+    var path = req.files[0].path;
+    console.log('path', path)
+    var imageName = req.files[0].originalname;
+    console.log('imageName', imageName)
+    var imagepath = {};
+    imagepath['path'] = path;
+    imagepath['originalname'] = imageName;
 
+    newUser.image = path;
     User.findOne({email: req.body.email}, function (err, result) {
         if (err) {
             return res.send(err)
@@ -215,6 +224,7 @@ app.put('/data/:id',function (req, res) {
                 email: test.email,
                 role: test.role,
                 password: test.password,
+                image: test.image
             }};
     var options = {new : true};
     User.findOneAndUpdate(query, update, options, function (err, test2) {
@@ -269,7 +279,7 @@ var loginUser=require('.././model/userLogin.js');
                      });
                      res.send({user: user.toJSON(), token: result.token, msg: "successful login"});
                  });
-                 //}
+
                  // else {
                  //     return res.send({msg: 'Invalid email or password'})
                  // }
@@ -285,12 +295,12 @@ var loginUser=require('.././model/userLogin.js');
                  //     // Login successful, write token, and send back user
                  //     res.send({token: generateToken(user), user: user.toJSON()});
                  // });
-              //}
          // else{
          //     return res.send({msg: 'Invalid email or password'})
          // }
      });
  })
+
 
 // app.post('/login/data', function(req, res) {
 //     loginUser.findOne({email: req.body.email}, function (err, result) {
@@ -379,10 +389,7 @@ app.get('/login/data/:id',function (req, res) {
     })
 })
 
-// catch 404 and forward to error handlers
-
 //*********forgot pwd*********
-
 // app.post('/forgot', function(req, res, next) {
 //     async.waterfall([
 //         function(done) {
@@ -448,9 +455,11 @@ app.get('/login/data/:id',function (req, res) {
                  pass: 'chitracc123'
              }
          });
+         User.token = randtoken.generate(32);
          //console.log(result)
-         //console.log('result-token', result.token);
-         const verifyLink = 'http://localhost:4000/changepassword/' + result.token;
+         console.log('result-token', User.token);
+         const verifyLink = 'http://localhost:4000/changepassword/' + User.token;
+         console.log('User.email', result.email)
          var mailOptions = {
              from: 'lanetteam.charmic@gmail.com',
              to: result.email,
@@ -490,7 +499,6 @@ var UploadImage = require('.././model/uploadImage')
 // To get more info about 'multer'.. you can go through https://www.npmjs.com/package/multer..
 
 app.post('/images',upload.any('originalname'),function(req, res, next) {
-    //res.send(req.files);
         console.log('res', res)
         console.log('req', req.files)
         /*req.files has the information regarding the file you are uploading...
@@ -503,9 +511,8 @@ app.post('/images',upload.any('originalname'),function(req, res, next) {
         var imagepath = {};
         imagepath['path'] = path;
         imagepath['originalname'] = imageName;
-        //we are passing two objects in the addImage method.. which is defined above..
         var test1 = new UploadImage();
-        test1.originalname = imageName;
+        test1.originalname = path;
 
         test1.save(function (err, result) {
             if (err) {
@@ -526,7 +533,6 @@ app.get('/images', function(req, res) {
         res.json(genres);
     });
 });
-
 app.get('/images/:id', function(req, res) {
     UploadImage.find({id: req.params.id}, function(err, genres) {
         if (err) {
@@ -551,30 +557,28 @@ app.delete('/images/:id',function (req,res) {
 ///********************* userData ***************
 var userData = require('.././model/userData')
 
-app.post('/uploadData', upload.any('originalname'),function (req,res) {
+app.post('/uploadData',upload.any('originalname'),function (req,res) {
+
+        // upload(req, res, function (err, data) {
         // if (err) {
         //     return res.end("Error uploading file.");
         // }
-    var path = req.files[0].path;
-    console.log('path', path)
-    var imageName = req.files[0].originalname;
-    console.log('imageName', imageName)
-    var imagepath = {};
-    imagepath['path'] = path;
-    imagepath['originalname'] = imageName;
         const uploadPost = new userData();
-        uploadPost.image = 'http://localhost:5000/images/'+ imageName;
-        //uploadPost.originalname = imageName;
+        uploadPost.originalname = 'http://localhost:5000/images/' + req.file.path.split('/')[1];
+        //uploadPost.originalname = path;
         // uploadpost.title = req.body.title;
         // uploadpost.description=req.body.description;
+       // uploadPost.imageId = req.params.id;
         uploadPost.userId = req.params.id;
+        uploadPost.likesId = req.params.id;
         console.log('----', req.params.id)
         uploadPost.save(function (err) {
             if (err) {
-                return res.send({msg:"Error while save image in database"});
+                return res.send({msg: "Error while save image in database"});
             }
-            return res.send({msg:'Success', user: uploadPost.toJSON()});
+            return res.send({msg: 'Success', user: uploadPost.toJSON()});
         })
+//    })
 })
 
 //******************** LIKES ************
@@ -611,6 +615,3 @@ app.listen(5000,function (err) {
 });
 
 module.exports = app;
-
-//img to db, refresh, css-datepicker, update with change, dashboard -api, likes
-//comments, user, admin - auth

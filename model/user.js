@@ -16,6 +16,7 @@ var userSchema = new mongoose.Schema({
         trim: true
     },
     role: String,
+    image: String,
     token: String,
     isVerified: { type: Boolean, default: false }
 });

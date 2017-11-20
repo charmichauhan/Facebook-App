@@ -3,8 +3,17 @@ import { Link } from 'react-router';
 import { connect } from 'react-redux';
 import { getById} from "../actions/userActions";
 import {bindActionCreators} from 'redux'
+import RaisedButton from 'material-ui/RaisedButton';
 
 class Profile extends React.Component {
+    constructor(props){
+        super()
+        this.state ={
+            open: false
+        }
+        this.handleSubmit1 = this.handleSubmit1.bind(this);
+    }
+
     handleUser(_id){
         debugger
         //console.log('id_profile', _id)
@@ -13,6 +22,11 @@ class Profile extends React.Component {
         debugger
         return (e) => getById(_id);
     }
+    handleSubmit1(){
+        debugger
+            this.props.history.push('/edit_profile')
+    }
+
     render() {
         const {user, users} = this.props
         return (
@@ -20,9 +34,15 @@ class Profile extends React.Component {
                 <h1>My Profile</h1>
                 <p>Hi! {user.user.username}</p>
                 <br/>
-                <p>Your Email-id: {user.user.email}</p>
+                <p>Your Email-id is {user.user.email}</p>
                 <br/>
-                <p>You are a: {user.user.role}</p>
+                <p>You are a {user.user.role}</p>
+                <br/>
+                <p>Your profile image:
+                    <br/>
+                    <img style={{width: '300px', height: '300px'}}
+                         src={user.user.image}/>
+                </p>
                 {users.items &&
                 <ul>
                     {users.items.map((user, index) =>
@@ -32,6 +52,8 @@ class Profile extends React.Component {
                     )}
                 </ul>
                 }
+                <RaisedButton label="Change Profile photo" href="/edit_profile" backgroundColor="#3498DB"/>
+
             </div>
         );
     }
@@ -66,3 +88,4 @@ export default connect(mapStateToProps,{getById} )(Profile)
 //     }
 // }
 // setEditorRef = (editor) => this.editor = editor
+

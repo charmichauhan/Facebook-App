@@ -3,7 +3,7 @@ import {  reduxForm } from 'redux-form';
 import {reactLocalStorage} from 'reactjs-localstorage';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
-import {userActions, register} from '../actions/userActions'
+import { register} from '../actions/userActions'
 import {bindActionCreators} from 'redux';
 
 class Registration extends React.Component{
@@ -52,6 +52,7 @@ class Registration extends React.Component{
                this.props.register(user);
             }
         }
+
     onChange (event) {
         this.setState({role: event.target.value});
     }
