@@ -73,6 +73,8 @@ function getById(_id) {
 }
 
 function update(user) {
+   //const {user} = this.props;
+    //console.log('user---', user)
     const requestOptions = {
         method: 'PUT',
         headers: { ...authHeader(), 'Content-Type': 'application/json' },

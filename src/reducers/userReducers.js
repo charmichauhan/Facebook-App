@@ -69,30 +69,30 @@ export function users(state = {}, action) {
                     return user;
                 })
             };
-        case userConstants.UPDATE_REQUEST:
-            return {
-                ...state,
-                items: state.items.map(user =>
-                    user._id === action._id
-                        ? { ...user, loading: true}
-                        : user
-                )
-            };
-        case userConstants.UPDATE_SUCCESS:
-            return {
-                items: state.items.filter(user => user._id !== action._id)
-            };
-        case userConstants.UPDATE_FAILURE:
-            return {
-                ...state,
-                items: state.items.map(user => {
-                    if (user._id === action._id) {
-                        const { loading } = user;
-                        return { error: action.error };
-                    }
-                    return user;
-                })
-            };
+        // case userConstants.UPDATE_REQUEST:
+        //     return {
+        //         ...state,
+        //         items: state.items.map(user =>
+        //             user._id === action._id
+        //                 ? { ...user, loading: true}
+        //                 : user
+        //         )
+        //     };
+        // case userConstants.UPDATE_SUCCESS:
+        //     return {
+        //         items: state.items.filter(user => user._id !== action._id)
+        //     };
+        // case userConstants.UPDATE_FAILURE:
+        //     return {
+        //         ...state,
+        //         items: state.items.map(user => {
+        //             if (user._id === action._id) {
+        //                 const { loading } = user;
+        //                 return { error: action.error };
+        //             }
+        //             return user;
+        //         })
+        //     };
         default:
             return state
     }

@@ -8,7 +8,6 @@ import {bindActionCreators} from 'redux';
 class Login extends React.Component {
     constructor(props) {
         super(props);
-
         // reset login status
         this.props.logout();
         this.state = {
@@ -19,12 +18,10 @@ class Login extends React.Component {
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
-
     handleChange(e) {
         const { name, value } = e.target;
         this.setState({ [name]: value });
     }
-
     handleSubmit(e) {
         e.preventDefault();
         this.setState({ submitted: true });
@@ -34,8 +31,10 @@ class Login extends React.Component {
             debugger
             this.props.login(email, password);
         }
+        else{
+            console.log('null data')
+        }
     }
-
     render() {
         const { loggingIn } = this.props;
         const { email, password, submitted } = this.state;

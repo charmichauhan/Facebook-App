@@ -23,10 +23,9 @@ class Profile extends React.Component {
         return (e) => getById(_id);
     }
     handleSubmit1(){
-        debugger
+            debugger
             this.props.history.push('/edit_profile')
     }
-
     render() {
         const {user, users} = this.props
         return (

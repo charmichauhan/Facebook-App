@@ -1,12 +1,11 @@
 var mongoose = require('mongoose');
 var User = require('./user')
 var likes = require('./likes')
-var uploadImage = require('./uploadImage');
+var comments = require('./comments')
 var userDataSchema = new mongoose.Schema({
-    //imageId: {type: mongoose.Schema.Types.ObjectId, ref: 'uploadImage'},
     userId:{type: mongoose.Schema.Types.ObjectId, ref: 'User'},
-    originalname:String,
-  //  commentId:[{type: mongoose.Schema.Types.ObjectId, ref: 'CommentPost'}],
+    originalname: {type: String, required: true, unique: true},
+    commentId:[{type: mongoose.Schema.Types.ObjectId, ref: 'comments'}],
     likeId:{type: mongoose.Schema.Types.ObjectId, ref:'likes'},
     createdAt: { type: Date, required: true, default: Date.now},
     isApprove:{ type: Boolean, default: false }

@@ -1,7 +1,8 @@
 import React from 'react';
 import {Field, reduxForm } from 'redux-form';
 import { connect } from 'react-redux';
-import {update, getById} from "../actions/userActions"
+import {update} from "../../services/userServices"
+import { getById} from "../actions/userActions"
 import {bindActionCreators} from 'redux'
 import ReactAvatarEditor from 'react-avatar-editor'
 import {Card, CardTitle} from 'material-ui/Card';
@@ -40,15 +41,12 @@ class EditProfile extends React.Component {
         this.handleChange = this.handleChange.bind(this);
         this.handleChange1 = this.handleChange1.bind(this);
         this.onChange = this.onChange.bind(this);
-
         this.handleSubmit = this.handleSubmit.bind(this);
     }
     componentDidMount(_id){
         // persistStore(store, {}, () => {
         const {user} = this.props
         console.log('user', user)
-        debugger
-            console.log('Oldimage', user.user.image)
         //  })
     }
     handleUser(_id){
@@ -71,9 +69,10 @@ class EditProfile extends React.Component {
         // });
         // this.setState({images: e.target.files[0]})
         this.state.images = e.target.files[0]
-        // var images = e.target.files[0]
-         console.log('image',this.state.images)
-       // user.user.image = images
+        const {user} = this.state
+        const a1=this.state.images
+         user.image = 'uploads/'+a1.name
+        console.log('user.image', user.image)
     }
     // handleSave =data => {
     //     debugger
@@ -91,7 +90,7 @@ class EditProfile extends React.Component {
     //         }
     //     })
     // }
-    setEditorRef = (editor) => this.editor = editor
+    setEditorRef = (editor) => this.editor = editor;
     onClickSave = () => {
         debugger
         if (this.editor) {
@@ -99,7 +98,7 @@ class EditProfile extends React.Component {
             const canvas = this.editor.getImage()
             console.log('canvas', canvas)
             const url = canvas.toDataURL('image/jpeg', 0.5);
-           //const url = (canvas.toDataURL('image/jpeg').replace(/^data:image\/(png|jpg|jpeg);base64,/, ''))
+             //const url = (canvas.toDataURL('image/jpeg').replace(/^data:image\/(png|jpg|jpeg);base64,/, ''))
             console.log('image-url--',url)
             this.downloadURI(url, "profile_image");
             // If you want the image resized to the canvas size (also a HTMLCanvasElement)
@@ -130,17 +129,23 @@ class EditProfile extends React.Component {
         }
     }
     onChange (event) {
-        this.setState({role: event.target.value});
+        console.log('---', event.target.value )
+        const {user} = this.state
+       // this.setState({role: event.target.value});
+        user.role =  event.target.value
+        console.log('user.role', user.role)
     }
     handleSubmit(event) {
         event.preventDefault();
         debugger
         this.setState({ submitted: true });
-        console.log(this.state.user)
+        // const {user} = this.props;
+        //  console.log('id', user.user._id)
+        //  const  id=user.user._id
         const { user } = this.state;
-         if (user.username && user.password && user.email && user.role && user.image) {
+         if ( user.username && user.email && user.role && user.image) {
             debugger
-           update(user);
+             update(user);
         }
     }
     //updateUser() {
@@ -153,16 +158,24 @@ class EditProfile extends React.Component {
     handleChange(event) {
         const { name, value } = event.target;
         const { user } = this.state;
+        //const user = reactLocalStorage.getObject('user');
         this.setState({
             user: {
-                ...user.user,
+                ...user,
                 [name]: value
             }
         });
     }
+    reset(){
+        console.log('reset')
+        debugger
+        this.refs.username.value="";
+        this.refs.email.value="";
+        this.refs.role.value="";
+    }
     render() {
         const user = reactLocalStorage.getObject('user');
-        // const getUsername = ({input}) => {
+        //const getUsername = ({input}) => {
         //     const user = reactLocalStorage.getObject('user');
         //     for (var prop in user.user) {
         //         //console.log('  ' + prop + ': ' + user.user[prop]);
@@ -200,17 +213,25 @@ class EditProfile extends React.Component {
                                 <h2>Update your profile here...</h2>
                                 <form  onSubmit={this.handleSubmit}>
 
-                                    <div className={'form-group' + (submitted && !user.user.username ? ' has-error' : '')}>
+                                    <div className={'form-group' + (submitted && !this.state.user.username ? ' has-error' : '')}>
                                         <label htmlFor="username">Username</label>
-                                            <input type="text" className="form-control" name="username" value={user.user.username } onChange={this.handleChange}/>
-                                            {submitted && !user.user.username &&
+                                            <input ref="username" type="text" className="form-control" name="username" value={this.state.user.username || user.user.username} onChange={this.handleChange}/>
+                                            {submitted && !this.state.user.username &&
                                             <div className="help-block">Username is required</div>
                                             }
                                     </div>
 
+                                    <div className={'form-group' + (submitted && !this.state.user.password ? ' has-error' : '')}>
+                                        <label htmlFor="password">Password</label>
+                                        <input ref="password" type="password" className="form-control" name="password" value={this.state.user.password || user.user.password}  onChange={this.handleChange} />
+                                        {submitted && !this.state.user.password  &&
+                                        <div className="help-block">Password is required</div>
+                                        }
+                                    </div>
+
                                     <div className={'form-group' + (submitted && !user.user.email ? ' has-error' : '')}>
                                         <label htmlFor="email">Email</label>
-                                        <input ref="email" type="email" className="form-control" name="email"  value={user.user.email} onChange={this.handleChange}/>
+                                        <input ref="email" type="email" className="form-control" name="email"  value={this.state.user.email || user.user.email} onChange={this.handleChange}/>
                                         {submitted && !user.user.email &&
                                         <div className="help-block">Email is required</div>
                                         }
@@ -218,7 +239,7 @@ class EditProfile extends React.Component {
 
                                     <div className="form-group">
                                         <label htmlFor="role">Role</label>
-                                        <select ref="role" value={user.user.role} onChange={this.onChange} style={{height: '40px', width:'100%'}}>
+                                        <select ref="role" value={this.state.user.role || user.user.role} onChange={this.onChange} style={{height: '40px', width:'100%'}}>
                                             <option selected value="User">User</option>
                                             <option value="Admin">Admin</option>
                                         </select>
@@ -236,11 +257,9 @@ class EditProfile extends React.Component {
 
                                     <div className="form-group">
                                         <button className="btn btn-primary">Update</button>
-                                        <button className="btn btn-red">Cancel</button>
+                                        <button className="btn btn-red" onClick={this.reset}>Cancel</button>
                                     </div>
-
-                                    {/*<button onClick={this.updateUser} >User</button>*/}
-                            </form>
+                                </form>
                         </div>
                     </Card>
                 </div>

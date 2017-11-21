@@ -105,6 +105,7 @@ export const update=(user)=> {
             .then(
                 user => {
                     dispatch(success(user));
+                    history.push('/dashboard');
                     dispatch(alertActions.success('Update successfully'));
                 },
                 error => {
@@ -112,9 +113,9 @@ export const update=(user)=> {
                 }
             );
     };
-    function request(_id) { return { type: userConstants.UPDATE_REQUEST, _id } }
-    function success(_id) { return { type: userConstants.UPDATE_SUCCESS, _id } }
-    function failure(_id, error) { return { type: userConstants.UPDATE_FAILURE, _id, error } }
+    function request(user) { return { type: userConstants.UPDATE_REQUEST, user } }
+    function success(user) { return { type: userConstants.UPDATE_SUCCESS, user } }
+    function failure(user, error) { return { type: userConstants.UPDATE_FAILURE, user, error } }
 }
 
 // prefixed function name with underscore because delete is a reserved word in javascript

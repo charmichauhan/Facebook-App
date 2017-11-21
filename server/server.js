@@ -1,5 +1,3 @@
-//nMKq33yp2txCAErQK2k4ce8JDmo0y448
-//jqXK7fHG4im3IS6QuVSKXj43goHeVmB6 -mital
 var express = require('express');
 var nodemailer = require ('nodemailer');
 var flash = require('express-flash');
@@ -32,7 +30,7 @@ var Temps = require('.././model/token')
 // app.set('views', path.join(__dirname, ''));
 // app.set('view engine', 'ejs');
 
- // app.set('', __dirname + 'index.html');
+// app.set('', __dirname + 'index.html');
  // app.engine('html', require('ejs').renderFile);
  // app.set('view engine', 'html');
 
@@ -60,7 +58,6 @@ var storage = multer.diskStorage({
 var upload = multer({
     storage: storage
 })
-
 // var storage = multer.diskStorage({
 //     destination: function (req, file, callback) {
 //         callback(null, './newUploads');
@@ -214,12 +211,24 @@ app.delete('/data/:id',function (req,res) {
     });
 });
 
-app.put('/data/:id',function (req, res) {
+app.put('/data/:id',upload.any('originalname'),function (req, res) {
     var test = req.body ;
+    console.log('req.body', req.body)
     var query = req.params.id;
+
+    var path = req.files[0].path;
+    console.log('path', path)
+    var imageName = req.files[0].originalname;
+    console.log('imageName', imageName)
+    var imagepath = {};
+    imagepath['path'] = path;
+    imagepath['originalname'] = imageName;
+    console.log('path', path)
+    test.image = path;
+    console.log('---' , test.image)
     var update = {
         '$set':
-            {
+        {
                 username: test.username,
                 email: test.email,
                 role: test.role,
@@ -279,7 +288,6 @@ var loginUser=require('.././model/userLogin.js');
                      });
                      res.send({user: user.toJSON(), token: result.token, msg: "successful login"});
                  });
-
                  // else {
                  //     return res.send({msg: 'Invalid email or password'})
                  // }
@@ -300,8 +308,6 @@ var loginUser=require('.././model/userLogin.js');
          // }
      });
  })
-
-
 // app.post('/login/data', function(req, res) {
 //     loginUser.findOne({email: req.body.email}, function (err, result) {
 //         if(err){
@@ -442,7 +448,7 @@ app.get('/login/data/:id',function (req, res) {
 // });
 //******************reset*****
 
- app.post('/forgot_password', function(req, res, next) {
+app.post('/forgot_password', function(req, res, next) {
      var email = req.params.email;
      User.findOne({email: email}, function (err, result) {
          if (err) {
@@ -477,7 +483,6 @@ app.get('/login/data/:id',function (req, res) {
          });
      });
  });
-
 // app.get('/reset/:token', function(req, res) {
 //     User.findOne({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now() } }, function(err, user) {
 //         if (!user) {
@@ -501,9 +506,6 @@ var UploadImage = require('.././model/uploadImage')
 app.post('/images',upload.any('originalname'),function(req, res, next) {
         console.log('res', res)
         console.log('req', req.files)
-        /*req.files has the information regarding the file you are uploading...
-        from the total information, i am just using the path and the imageName to store in the mongo collection(table)
-        */
         var path = req.files.path;
         console.log('path', path)
         var imageName = req.files[0].originalname;
@@ -563,8 +565,18 @@ app.post('/uploadData',upload.any('originalname'),function (req,res) {
         // if (err) {
         //     return res.end("Error uploading file.");
         // }
-        const uploadPost = new userData();
-        uploadPost.originalname = 'http://localhost:5000/images/' + req.file.path.split('/')[1];
+    var path = req.files.path;
+    console.log('path', path)
+    var imageName = req.files[0].originalname;
+    console.log('imageName', imageName)
+    var imagepath = {};
+    imagepath['path'] = path;
+    imagepath['originalname'] = imageName;
+    var test1 = new UploadImage();
+    test1.originalname = path;
+
+    const uploadPost = new userData();
+        uploadPost.originalname = 'http://localhost:5000/images/' +imageName;
         //uploadPost.originalname = path;
         // uploadpost.title = req.body.title;
         // uploadpost.description=req.body.description;
@@ -606,6 +618,49 @@ app.get('/likes',function (req,res) {
         res.json(test1);
     });
 });
+
+//*************** Comments **************
+var comments = require('.././model/comments')
+
+app.post('/comments', upload.any('originalname'),function (req,res) {
+    //upload(req, res, function (err, data) {
+        // if (err) {
+        //     return res.end("Error uploading file.");
+        // }
+        const uploadpost = new comments();
+        uploadpost.postId=req.body.postId;
+        uploadpost.userId = req.body.userId;
+        //uploadpost.frdId = req.body.frdId;
+        uploadpost.comment = req.body.comment;
+        console.log('comment obj---',uploadpost)
+        uploadpost.save(function (err) {
+            if (err) {
+                return res.end({msg:"Error while saving image in database"});
+            }
+            userData.findOne({_id:req.body.postId},function (err,result) {
+                console.log('result', result)
+                debugger
+                if(err){
+                    res.send({msg:err});
+                }
+                userData.updateOne(
+                    { _id: req.body.postId },
+                    { $push: { commentId: uploadpost._id } }, {
+                        upsert: true,
+                        returnNewDocument: true
+                    }, function (err) {
+                        debugger
+                        if (err) {
+                            res.end({msg:"Error while updating image in database"});
+                        }
+                        // res.end({msg:'Success'});
+                    })
+                //return res.send({msg:'Success'});
+            })
+            return res.send({msg:'Success',user: uploadpost.toJSON()});
+        })
+    //})
+})
 
 app.listen(5000,function (err) {
     if(err){

@@ -11,7 +11,6 @@ class Post extends React.Component {
     componentDidMount(){
         debugger
         this.props.getAll()
-        debugger
     }
     handleDeleteUser(_id) {
         debugger
@@ -44,11 +43,11 @@ class Post extends React.Component {
                                         <br/>
                                         <Comment/>
                                         <br/> <br/> <br/>
-                                        {/*{*/}
-                                        {/*user.deleting ? <em> - Deleting...</em>*/}
-                                        {/*: user.deleteError ? <span className="text-danger"> - ERROR: {user.deleteError}</span>*/}
-                                        {/*: <span> <a onClick={this.handleDeleteUser(user._id)}>Delete Post</a></span>*/}
-                                        {/*}*/}
+                                        {
+                                        user.deleting ? <em> - Deleting...</em>
+                                        : user.deleteError ? <span className="text-danger"> - ERROR: {user.deleteError}</span>
+                                        : <span> <a onClick={this.handleDeleteUser(user._id)}>Delete Post</a></span>
+                                        }
                                     </div>
                                 )}
                             </div>
