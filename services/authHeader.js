@@ -6,6 +6,8 @@ export function authHeader() {
         console.log('token', user.token)
         return { 'Authorization': 'Bearer ' + user.token };
     } else {
-        return {};
+        return {
+           // '': ''
+        };
     }
 }

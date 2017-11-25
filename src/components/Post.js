@@ -21,18 +21,18 @@ class Post extends React.Component {
         if (!this.props.index) {
             return (
                 <div className="container">
-                    <Card >
-                    <div className="col-md-6 col-md-offset-3 " style={{flexWrap:'wrap'}}>
+                    <div >
+                    <div className="col-md-6 col-md-offset-3" style={{flexWrap:'wrap'}}>
                         {users.loading && <em>Loading users...</em>}
                             {users.error && <span className="text-danger">ERROR: {users.error}</span>}
                             {users.items &&
-                            <div>
+                            <Card>
                                 {users.items.map((user, index) =>
                                     <div key={user._id}>
                                         <br/><br/>
-                                        {user.username}
+                                        <h4>{user.username}</h4>
                                         <br/>
-                                        <img style={{width: '350px', height: '350px'}} src={user.image}/>
+                                        <img style={{width: '525px', height: '525px'}} src={user.image}/>
                                         <br/>
                                         <Card>
                                             <CardTitle>
@@ -40,26 +40,32 @@ class Post extends React.Component {
                                                 <Like/>
                                             </CardTitle>
                                         </Card>
-                                        <br/>
-                                        <Comment/>
-                                        <br/> <br/> <br/>
-                                        {
-                                        user.deleting ? <em> - Deleting...</em>
-                                        : user.deleteError ? <span className="text-danger"> - ERROR: {user.deleteError}</span>
-                                        : <span> <a onClick={this.handleDeleteUser(user._id)}>Delete Post</a></span>
-                                        }
+                                        <Card>
+                                            <CardTitle>
+                                                Comments
+                                                <Comment/>
+                                            </CardTitle>
+                                        </Card>
+                                       <br/> <br/>
+                                        {/*{*/}
+                                        {/*user.deleting ? <em> - Deleting...</em>*/}
+                                        {/*: user.deleteError ? <span className="text-danger"> - ERROR: {user.deleteError}</span>*/}
+                                        {/*: <span> <a onClick={this.handleDeleteUser(user._id)}>*/}
+                                                {/*<i className="fa fa-delete">Delete</i>*/}
+                                            {/*</a></span>*/}
+                                        {/*}*/}
                                     </div>
                                 )}
-                            </div>
+                            </Card>
                             }
                     <br/>
                     </div>
-                    </Card>
+                    </div>
                  </div>
             );
         }
         else{
-            return<div> </div>
+            return<div></div>
         }
     }
 }

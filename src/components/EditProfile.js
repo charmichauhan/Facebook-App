@@ -1,8 +1,7 @@
 import React from 'react';
 import {Field, reduxForm } from 'redux-form';
 import { connect } from 'react-redux';
-import {update} from "../../services/userServices"
-import { getById} from "../actions/userActions"
+import { update, getById} from "../actions/userActions"
 import {bindActionCreators} from 'redux'
 import ReactAvatarEditor from 'react-avatar-editor'
 import {Card, CardTitle} from 'material-ui/Card';
@@ -11,9 +10,7 @@ import DatePicker from 'react-datepicker';
 import moment from 'moment';
 import {reactLocalStorage} from 'reactjs-localstorage';
 import {persistStore} from 'redux-persist'
-import  store  from 'redux'
 //import 'react-datepicker/dist/react-datepicker.css';
-// import { Link } from 'react-router';
 
 class EditProfile extends React.Component {
     constructor(props) {
@@ -55,24 +52,14 @@ class EditProfile extends React.Component {
     handleChange1(date) {
         this.setState({
             startDate: date
-        });
+        })
     }
     handleNewImage = e => {
-        // const { name, value } = event.target;
-        // const { user } = this.state;
-        // this.setState({
-        //     user: {
-        //         image: e.target.files[0],
-        //         ...user,
-        //         [name]: value
-        //     }
-        // });
-        // this.setState({images: e.target.files[0]})
         this.state.images = e.target.files[0]
         const {user} = this.state
         const a1=this.state.images
-         user.image = 'uploads/'+a1.name
-        console.log('user.image', user.image)
+         user.image = 'uploads/'+a1.name;
+        console.log('userImage', user.image)
     }
     // handleSave =data => {
     //     debugger
@@ -105,9 +92,9 @@ class EditProfile extends React.Component {
             // const canvasScaled = this.editor.getImageScaledToCanvas()
             // console.log('scaled', canvasScaled
         }
-    }
+    };
      downloadURI(url, name) {
-        debugger
+        debugger;
         var link = document.createElement("a");
          console.log('link',link)
          console.log('name',name)
@@ -145,7 +132,7 @@ class EditProfile extends React.Component {
         const { user } = this.state;
          if ( user.username && user.email && user.role && user.image) {
             debugger
-             update(user);
+             this.props.update(user);
         }
     }
     //updateUser() {
@@ -281,7 +268,14 @@ function mapStateToProps(state) {
         users
     };
 }
-function mapDispatchToProps(dispatch) {
-    return bindActionCreators({update, getById, update}, dispatch);
+function mapStateToProp(){
+    const {user} = this.props;
+    return{
+        user: this.props.user
+    }
 }
-export default connect(mapStateToProps, {update, getById, update})(EditProfile)
+
+function mapDispatchToProps(dispatch) {
+    return bindActionCreators({update, getById}, dispatch);
+}
+export default connect(mapStateToProps, {update, getById})(EditProfile)

@@ -11,7 +11,6 @@ import {alertActions} from './alertActions'
 //     getById,
 //     delete: _delete,
 // };
-
 export const login = (email, password) => dispatch => {
         debugger
         dispatch(request({ email,password }));
@@ -138,13 +137,13 @@ export const Delete=(_id)=> {
     function failure(_id, error) { return { type: userConstants.DELETE_FAILURE, _id, error } }
 }
 
-export const likes=(counts)=>{
+export const likes=()=>{
     return dispatch => {
-        dispatch(request(counts));
+        dispatch(request());
         debugger
-        userService.likes(counts)
+        userService.likes()
             .then(
-                user => {
+                counts => {
                     dispatch(success());
                     dispatch(alertActions.success('Number of likes saved successfully'));
                 },
@@ -154,30 +153,28 @@ export const likes=(counts)=>{
                 }
             );
     };
-    function request(counts) { return { type: userConstants.LIKES_REQUEST, counts } }
-    function success(counts) { return { type: userConstants.LIKES_SUCCESS, counts } }
+    function request() { return { type: userConstants.LIKES_REQUEST,  } }
+    function success() { return { type: userConstants.LIKES_SUCCESS,  } }
     function failure(error) { return { type: userConstants.LIKES_FAILURE, error } }
 }
 
-export const comments=()=>{
+export const comments=(comment)=>{
     return dispatch => {
-        dispatch(request());
+        dispatch(request(comment));
         debugger
-        userService.comments()
+        userService.comments(comment)
             .then(
                 user => {
-                    dispatch(success());
-                    dispatch(alertActions.success(''));
+                    dispatch(success(comment));
+                    dispatch(alertActions.success('comments saved successfully'));
                 },
                 error => {
-                    dispatch(failure(error));
+                    dispatch(failure(comment, error));
                     dispatch(alertActions.error(error));
                 }
             );
     };
-    function request() { return { type: userConstants.COMMENTS_REQUEST } }
-    function success() { return { type: userConstants.COMMENTS_SUCCESS } }
-    function failure(error) { return { type: userConstants.COMMENTS_FAILURE, error } }
+    function request(comment) { return { type: userConstants.COMMENTS_REQUEST , comment} }
+    function success(comment) { return { type: userConstants.COMMENTS_SUCCESS, comment } }
+    function failure(comment, error) { return { type: userConstants.COMMENTS_FAILURE,comment, error } }
 }
-
-

@@ -16,9 +16,10 @@ class Like extends React.Component {
                 count : preState.count + 1
             };
         });
+        debugger
         console.log('count', this.state.count + 1)
         const counts = this.state.count + 1
-        this.props.likes(counts);
+        this.props.likes();
     }
 
     render() {

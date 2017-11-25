@@ -3,13 +3,6 @@ const validator = require('validator');
 
 const router = new express.Router();
 
-/**
- * Validate the sign up form
- *
- * @param {object} payload - the HTTP body message
- * @returns {object} The result of validation. Object contains a boolean validation result,
- *                   errors tips, and a global message for the whole form.
- */
 export function validateSignupForm(payload) {
     const errors = {};
     let isFormValid = true;
@@ -43,7 +36,6 @@ export function validateSignupForm(payload) {
 
 /**
  * Validate the login form
- *
  * @param {object} payload - the HTTP body message
  * @returns {object} The result of validation. Object contains a boolean validation result,
  *                   errors tips, and a global message for the whole form.
@@ -74,7 +66,7 @@ export function validateLoginForm(payload) {
     };
 }
 
-router.post('/signup', (req, res) => {
+router.post('/', (req, res) => {
     const validationResult = validateSignupForm(req.body);
     if (!validationResult.success) {
         return res.status(400).json({

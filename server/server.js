@@ -13,13 +13,15 @@ var async = require('async');
 var mongoose = require('mongoose');
 var React = require('react');
 var app = express();
-var corsPrefetch = require('cors-prefetch-middleware');
-var imagesUpload = require('images-upload-middleware');
 require('babel-core/register');
 var randtoken = require('rand-token');
 var multer  = require('multer')
-var fs = require('fs')
-var Temps = require('.././model/token')
+var Temps = require('.././model/token');
+var _ = require('lodash');
+
+// const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY;
+// const SENDGRID_SENDER = process.env.SENDGRID_SENDER;
+// const Sendgrid = require('sendgrid')(SENDGRID_API_KEY);
 
 //var nev = require('email-verification')(mongoose);
 //const authRoutes = require('./routes/auth');
@@ -29,7 +31,6 @@ var Temps = require('.././model/token')
 // app.set('view engine', 'html');
 // app.set('views', path.join(__dirname, ''));
 // app.set('view engine', 'ejs');
-
 // app.set('', __dirname + 'index.html');
  // app.engine('html', require('ejs').renderFile);
  // app.set('view engine', 'html');
@@ -41,7 +42,22 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, '')));
 
-////******** multer **********
+// app.use(function (req, res, next) {
+//
+//     // Website you wish to allow to connect
+//     res.setHeader('Access-Control-Allow-Origin', 'http://localhost:8888');
+//     // Request methods you wish to allow
+//     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+//     // Request headers you wish to allow
+//     res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+//     // Set to true if you need the website to include cookies in the requests sent
+//     // to the API (e.g. in case you use sessions)
+//     res.setHeader('Access-Control-Allow-Credentials', true);
+//     // Pass to next layer of middleware
+//     next();
+// });
+
+//******** multer **********
 
 var storage = multer.diskStorage({
     destination: function(req, file, cb) {
@@ -55,7 +71,7 @@ var storage = multer.diskStorage({
                 cb(null, file.originalname);
     }
 });
-var upload = multer({
+const upload = multer({
     storage: storage
 })
 // var storage = multer.diskStorage({
@@ -79,7 +95,7 @@ var upload = multer({
 
 //mongoose.connect('mongodb://charmic:lanetteam1@ds153853.mlab.com:53853/testdata');
 mongoose.connect('mongodb://localhost:27017/FBapp');
-var User=require('.././model/user.js');
+const User=require('.././model/user.js');
 
 app.post('/data',upload.any('originalname'), function(req, res) {
     var user = req.body;
@@ -130,12 +146,13 @@ app.post('/data',upload.any('originalname'), function(req, res) {
                             }
                         });
                         console.log(newUser.token)
-                        const verifyLink = 'http://localhost:5000/emaily/' + newUser.token;
+                        const verifyLink = 'http://localhost:5000/verification/' + newUser.token;
                         var mailOptions = {
                             from: 'lanetteam.charmic@gmail.com',
-                            to: newUser.email,
-                            subject: 'Sending Email using Node.js',
-                            text: verifyLink
+                            to: 'lanetteam.charmic@gmail.com',
+                            subject: 'Sending Email for verification',
+                            text: "You have logged in Facebook Application. This mail is just sent you to verify " +
+                            "your account by below given link "  + verifyLink
                         };
                         transporter.sendMail(mailOptions, function (error, info) {
                             console.log(mailOptions)
@@ -215,16 +232,16 @@ app.put('/data/:id',upload.any('originalname'),function (req, res) {
     var test = req.body ;
     console.log('req.body', req.body)
     var query = req.params.id;
-
-    var path = req.files[0].path;
+    //console.log('path',req.files.path )
+    var path = req.files.path;
     console.log('path', path)
-    var imageName = req.files[0].originalname;
+    var imageName = req.files.originalname;
     console.log('imageName', imageName)
     var imagepath = {};
     imagepath['path'] = path;
     imagepath['originalname'] = imageName;
     console.log('path', path)
-    test.image = path;
+    test.originalname = path;
     console.log('---' , test.image)
     var update = {
         '$set':
@@ -233,7 +250,7 @@ app.put('/data/:id',upload.any('originalname'),function (req, res) {
                 email: test.email,
                 role: test.role,
                 password: test.password,
-                image: test.image
+                originalname: test.originalname
             }};
     var options = {new : true};
     User.findOneAndUpdate(query, update, options, function (err, test2) {
@@ -257,7 +274,6 @@ app.get('/data/:id',function (req, res) {
 var loginUser=require('.././model/userLogin.js');
 
  app.post('/login/data', function(req, res) {
-
      User.findOne({email: req.body.email}, function (err, user) {
          //console.log('user---', req.body.password)
          if (!user) {
@@ -345,111 +361,11 @@ var loginUser=require('.././model/userLogin.js');
 //     })
 // });
 
-//---------------get Data
-app.get('/login/data',function (req,res) {
-    loginUser.find(function (err,test1) {
-        if(err)
-        {
-            throw err;
-        }
-        res.send(test1);
-    });
-});
-
-//------------------Delete Data
-app.delete('/login/data/:id',function (req,res) {
-    var query={_id:req.params.id};
-    loginUser.remove(query,function (err,test1) {
-        if(err)
-        {
-            console.log("# API delete Error",err);
-        }
-        res.json(test1);
-    });
-});
-//
-// app.put('/login/data/:id',function (req, res) {
-//     var test = req.body ;
-//     var query = req.params.id;
-//     var update = {
-//         '$set':
-//             {
-//                 email: test.email,
-//                 password: test.password,
-//             }};
-//
-//     var options = {new : true};
-//     loginUser.findOneAndUpdate(query, update, options, function (err, test2) {
-//         if(err){
-//             throw err;
-//         }
-//         res.json(test2)
-//     })
-// });
-app.get('/login/data/:id',function (req, res) {
-    loginUser.find({_id: req.params.id},function (err,result) {
-        if(err){
-            return res.send({msg:err});
-        }
-        res.send({user:result});
-    })
-})
-
 //*********forgot pwd*********
-// app.post('/forgot', function(req, res, next) {
-//     async.waterfall([
-//         function(done) {
-//             crypto.randomBytes(20, function(err, buf) {
-//                 var token = buf.toString('hex');
-//                 done(err, token);
-//             });
-//         },
-//         function(token, done) {
-//             User.findOne({ email: req.body.email }, function(err, user) {
-//                 if (!user) {
-//                     req.flash('error', 'No account with that email address exists.');
-//                     return res.redirect('/forgot_password');
-//                 }
-//                 user.resetPasswordToken = token;
-//                 user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
-//
-//                 user.save(function(err) {
-//                     done(err, token, user);
-//                 });
-//             });
-//         },
-//         function(token, user, done) {
-//             var smtpTransport = nodemailer.createTransport('SMTP', {
-//                 service: 'SendGrid',
-//                 auth: {
-//                     email: 'lanetteam.charmic@gmail.com',
-//                     password:'lanetteam1'
-//                 }
-//             });
-//             var mailOptions = {
-//                 to: email,
-//                 from: 'charmichauhan9503@gmail.com',
-//                 subject: 'Password Reset',
-//                 text: 'You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n' +
-//                 'Please click on the following link, or paste this into your browser to complete the process:\n\n' +
-//                 'http://' + req.headers.host + '/reset/' + token + '\n\n' +
-//                 'If you did not request this, please ignore this email and your password will remain unchanged.\n'
-//             };
-//             smtpTransport.sendMail(mailOptions, function(err) {
-//                 req.flash('info', 'An e-mail has been sent to ' + email + ' with further instructions.');
-//                 done(err, 'done');
-//             });
-//         }
-//         //fetch email of user at reg tym
-//     ], function(err) {
-//         if (err) return next(err);
-//         res.redirect('/');
-//     });
-// });
-//******************reset*****
 
 app.post('/forgot_password', function(req, res, next) {
-     var email = req.params.email;
+     var email = req.body.email;
+     console.log('email', email)
      User.findOne({email: email}, function (err, result) {
          if (err) {
              return res.send(err)
@@ -462,15 +378,16 @@ app.post('/forgot_password', function(req, res, next) {
              }
          });
          User.token = randtoken.generate(32);
-         //console.log(result)
          console.log('result-token', User.token);
-         const verifyLink = 'http://localhost:4000/changepassword/' + User.token;
-         console.log('User.email', result.email)
+         const verifyLink = 'http://localhost:4000/forgot_password/' + User.token;
+         console.log('email',email);
          var mailOptions = {
              from: 'lanetteam.charmic@gmail.com',
-             to: result.email,
-             subject: 'Sending Email using Node.js',
-             text: verifyLink
+             to: 'lanetteam.charmic@gmail.com',
+             subject: 'Sending Email to enter new password',
+             text: 'You are receiving this mail because you have requested to change the password for your account.\n\n' +
+                    'Please click on the following link, or paste this into your browser to complete the process:\n\n' +
+                    verifyLink + 'If you did not request this, please ignore this email and your password will remain unchanged.\n'
          };
          transporter.sendMail(mailOptions, function (error, info) {
              console.log('mailOptions',mailOptions)
@@ -478,7 +395,7 @@ app.post('/forgot_password', function(req, res, next) {
                  console.log(error);
                  return res.send({msg: 'error'})
              }
-             res.send({msg: ""})
+             res.send({msg: "Email sent"})
              console.log('Email sent: ' + info.response);
          });
      });
@@ -501,12 +418,11 @@ app.post('/forgot_password', function(req, res, next) {
 //***** upload profile image***********************
 
 var UploadImage = require('.././model/uploadImage')
-// To get more info about 'multer'.. you can go through https://www.npmjs.com/package/multer..
 
 app.post('/images',upload.any('originalname'),function(req, res, next) {
         console.log('res', res)
         console.log('req', req.files)
-        var path = req.files.path;
+        var path = req.files[0].path;
         console.log('path', path)
         var imageName = req.files[0].originalname;
         console.log('imageName', imageName)
@@ -525,7 +441,6 @@ app.post('/images',upload.any('originalname'),function(req, res, next) {
             res.send(result)
         });
 });
-
 // To get all the images/files stored in MongoDB
 app.get('/images', function(req, res) {
     UploadImage.find(function(err, genres) {
@@ -577,10 +492,8 @@ app.post('/uploadData',upload.any('originalname'),function (req,res) {
 
     const uploadPost = new userData();
         uploadPost.originalname = 'http://localhost:5000/images/' +imageName;
-        //uploadPost.originalname = path;
         // uploadpost.title = req.body.title;
         // uploadpost.description=req.body.description;
-       // uploadPost.imageId = req.params.id;
         uploadPost.userId = req.params.id;
         uploadPost.likesId = req.params.id;
         console.log('----', req.params.id)
@@ -593,22 +506,82 @@ app.post('/uploadData',upload.any('originalname'),function (req,res) {
 //    })
 })
 
+app.get('/uploadData', function (req,res) {
+    userData.find(function (err,test1){
+        if(err){
+            return res.send({msg:err});
+        }
+      //  return res.send({msg: "success", user: userData.toJSON()});
+        res.json(test1);
+    })
+})
 //******************** LIKES ************
 
 var likes = require('.././model/likes')
 
-app.post('/likes', function (req, res) {
-    var test = new likes();
-    // var fbResponse = JSON.parse(body);
-    test.counts = req.body.counts;
-        test.save(function (err, test1) {
-            if(err)
-            {
-                res.send(err)
+// app.post('/likes', function (req, res) {
+//     var test = new likes();
+//     // var fbResponse = JSON.parse(body);
+//     test.counts = req.body.counts;
+//         test.save(function (err, test1) {
+//             if(err)
+//             {
+//                 res.send(err)
+//             }
+//             res.json(test1);
+//         })
+// })
+
+app.post('/postLikes', function (req,res) {
+    var like = false;
+    userData.findOne({_id:req.body.postId},function (err,resultpost) {
+        debugger
+        if(err){
+            res.send({msg:err});
+        }
+        console.log('likeid---', resultpost.likeId)
+        let _ = resultpost.likeId.map(function (id, index) {
+            debugger
+            const newId = id.toString()
+            if(newId === req.body.frdId){
+                like=true;
+                return true
             }
-            res.json(test1);
-        })
+        });
+        if(!like){
+            debugger
+            userData.updateOne(
+                { _id: req.body.postId },
+                { $push: { likeId: req.body.frdId } }, {
+                    upsert: true,
+                    returnNewDocument: true
+                }, function (err) {
+                    debugger
+                    if (err) {
+                        res.send("Error while updating image in database");
+                    }
+                    return res.send({msg:'likes added'});
+                })
+           // console.log('not exist')
+        }else{
+            debugger
+            userData.updateOne(
+                { _id: req.body.postId },
+                { $pull: { likeId: req.body.frdId } }, {
+                    upsert: true,
+                    returnNewDocument: true
+                }, function (err) {
+                    debugger
+                    if (err) {
+                        res.end("Error while update image in database");
+                    }
+                    return res.send({msg:'likedelete' + ''});
+                })
+            //console.log('exist')
+        }
+    })
 })
+
 app.get('/likes',function (req,res) {
     likes.find(function (err,test1) {
         if(err)
@@ -630,7 +603,7 @@ app.post('/comments', upload.any('originalname'),function (req,res) {
         const uploadpost = new comments();
         uploadpost.postId=req.body.postId;
         uploadpost.userId = req.body.userId;
-        //uploadpost.frdId = req.body.frdId;
+        uploadpost.frdId = req.body.frdId;
         uploadpost.comment = req.body.comment;
         console.log('comment obj---',uploadpost)
         uploadpost.save(function (err) {
@@ -653,14 +626,106 @@ app.post('/comments', upload.any('originalname'),function (req,res) {
                         if (err) {
                             res.end({msg:"Error while updating image in database"});
                         }
-                        // res.end({msg:'Success'});
                     })
-                //return res.send({msg:'Success'});
             })
             return res.send({msg:'Success',user: uploadpost.toJSON()});
         })
     //})
 })
+
+app.get('/comments', function (req,res) {
+    comments.find().populate('postId').populate('userId').populate('frdId').exec(function (err, result) {
+        if(err){
+            return res.send({msg:err});
+        }
+        res.send({comments:result});
+    })
+})
+//***************
+
+app.get('/getAllUsers', function (req,res) {
+console.log('data')
+    userData.find()
+        .populate('userId')
+        .populate('commentId')
+        .populate('likeId')
+        .populate({
+            path: 'commentId',
+            model: 'comments',
+            populate: {
+                path: 'userId',
+                model: 'User'
+            }
+        })
+        .populate({
+            path: 'commentId',
+            model: 'comments',
+            populate: {
+                path: 'frdId',
+                model: 'User'
+            }
+        })
+        .exec(function (err, result) {
+            console.log(err)
+            if (err) {
+                return res.send({msg: err});
+            }
+            res.send({posts: result});
+        })
+})
+
+//******** admin**********
+app.post('/admin_verification', function(req, res, next, user) {
+    //check user acct verified
+    //sent mail -> ur acct is not verified. Pls verify }
+    //console.log('user', user)
+    console.log('users')
+    // if (user.isVerified)
+    //     return res.send({
+    //         type: 'verified',
+    //         msg: 'Your account has been verified.'
+    //     });
+    // else {
+        console.log('send for verification');
+        const sgReq = Sendgrid.emptyRequest({
+            method: 'POST',
+           // path: '/v3/mail/send',
+            body: {
+                personalizations: [{
+                    to: [{email: "lanetteam.charmic@gmail.com"}],
+                    subject: 'Account Verification email'
+                }],
+                from: {email: "lanetteam.charmic@gmail.com"},
+                content: [{
+                    type: 'text/plain',
+                    value: 'Sendgrid on Google App Engine with Node.js.'
+                }]
+            },
+        })
+        console.log('send grid');
+        Sendgrid.API(sgReq, (err) => {
+            if (err) {
+                next(err);
+                return err;
+            }
+            // Render the index route on success
+            // res.render('/sendMail', {
+            //     sent: true
+            // });
+        });
+    //}
+})
+
+//api for delete acct
+app.delete('delete_acct/username', function(req, res) {
+    User.remove({username: req.params.username},function (err,test1) {
+        if(err)
+        {
+            console.log("# API delete Error",err);
+        }
+        res.json(test1);
+    });
+});
 
 app.listen(5000,function (err) {
     if(err){
@@ -668,5 +733,6 @@ app.listen(5000,function (err) {
     }
     console.log("API Server Is running on 5000");
 });
-
 module.exports = app;
+
+//multer, reg, login, forgot_pwd, upload img, userData, likes, comments, admin(2)

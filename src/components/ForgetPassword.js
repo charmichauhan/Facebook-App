@@ -12,7 +12,7 @@ class ForgetPassword extends Component {
         this.state = {
                 old_password: '',
                 new_password: '',
-            submitted: false
+                submitted: false
         };
         this.handleSubmit = this.handleSubmit.bind(this)
     }
@@ -21,12 +21,12 @@ class ForgetPassword extends Component {
         //alert('Your password changed successfully')
         event.preventDefault();
         this.setState({ submitted: true });
+        //const {user }= this.state;
         debugger
-        if (this.state.new_password ) {
+        if (this.state.new_password && this.state.old_password) {
             debugger
             this.props.history.push('/login')
         }
-
         // this.setState({ submitted: true })
         // console.log("Fdg")
         // if(this.state.submitted === true) {
@@ -44,7 +44,7 @@ class ForgetPassword extends Component {
 
                                 <label htmlFor="old_password">Old password</label>
                                 <div className={'form-group' + (submitted && !old_password ? ' has-error' : '')}>
-                                    <input type="text" value= {user.user.password} className="form-control" name="old_password" />
+                                    <input type="text" value= {this.state.old_password || user.user.password} className="form-control" name="old_password" />
                                     {submitted && !old_password &&
                                     <div className="help-block">Password is required</div>
                                     }
@@ -77,18 +77,6 @@ function validate(values) {
     }
     return errors;
 }
-// function mapStateToProps(state) {
-//     const {  users, authentication } = state;
-//     const { user } = authentication;
-//     return {
-//         user,
-//         users
-//     };
-// }
-// function mapDispatchToProps(dispatch) {
-//     return bindActionCreators({ getById}, dispatch);
-// }
-//export default connect(mapStateToProps, mapDispatchToProps)(ForgetPassword);
 
 export default ForgetPassword
 

@@ -71,7 +71,6 @@ class Dashboard extends React.Component {
                         >
                             <Post />
                     </Tab>
-
                     <Tab styles={styles.headline}
                         // icon={<IconButton><MoreVertIcon /></IconButton>}
                         label="Settings"
@@ -83,7 +82,6 @@ class Dashboard extends React.Component {
                             <MenuItem containerElement={<Link to="/login" />}
                                       value="3" primaryText="Sign out" />
                     </Tab>
-
                     <Tab
                         styles={styles.headline}
                          icon= { <Avatar

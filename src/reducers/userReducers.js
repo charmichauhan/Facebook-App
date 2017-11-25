@@ -40,7 +40,6 @@ export function users(state = {}, action) {
                         // return copy of user with 'deleteError:[error]' property
                         return { ...userCopy, deleteError: action.error };
                     }
-
                     return user;
                 })
             };
@@ -65,7 +64,6 @@ export function users(state = {}, action) {
                         const { loading } = user;
                         return { error: action.error };
                     }
-
                     return user;
                 })
             };

@@ -5,7 +5,7 @@ var uploadImageSchema = new mongoose.Schema({
     originalname: {
         type: String,
         required: true,
-        unique: true
+        //unique: true
     },
     createdAt: { type: Date, required: true, default: Date.now},
     isApprove:{ type: Boolean, default: false }

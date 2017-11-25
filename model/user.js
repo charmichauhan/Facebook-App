@@ -1,5 +1,5 @@
 var mongoose = require('mongoose');
-var bcrypt = require('bcrypt');
+//var bcrypt = require('bcrypt');
 var crypto = require('crypto'),
     algorithm = 'aes-256-ctr',
     password = 'd6F3Efeq';
@@ -16,41 +16,41 @@ var userSchema = new mongoose.Schema({
         trim: true
     },
     role: String,
-    image: String,
+    originalname: String,
     token: String,
     isVerified: { type: Boolean, default: false }
 });
 // authenticate input against database documents
-userSchema.statics.authenticate = function(email, password, callback) {
-    User.findOne({ email: email })
-        .exec(function (error, user){
-            if (error) {
-                return callback(error);
-            } else if ( !user ) {
-                var err = new Error('User not found.');
-                err.status = 401;
-                return callback(err);
-            }
-            bcrypt.compare(password, user.password, function(error, result){
-                if (result === true) {
-                    return callback(null, user);
-                } else {
-                    return callback();
-                }
-            })
-        });
-}
+// userSchema.statics.authenticate = function(email, password, callback) {
+//     User.findOne({ email: email })
+//         .exec(function (error, user){
+//             if (error) {
+//                 return callback(error);
+//             } else if ( !user ) {
+//                 var err = new Error('User not found.');
+//                 err.status = 401;
+//                 return callback(err);
+//             }
+//             bcrypt.compare(password, user.password, function(error, result){
+//                 if (result === true) {
+//                     return callback(null, user);
+//                 } else {
+//                     return callback();
+//                 }
+//             })
+//         });
+// }
 // hash password before saving to database
-userSchema.pre('save', function(next){
-    var user = this;
-    bcrypt.hash(user.password, 10, function(err, hash){
-        if (err) {
-            return next(err);
-        }
-        user.password = hash;
-        next();
-    })
-});
+// userSchema.pre('save', function(next){
+//     var user = this;
+//     bcrypt.hash(user.password, 10, function(err, hash){
+//         if (err) {
+//             return next(err);
+//         }
+//         user.password = hash;
+//         next();
+//     })
+// });
 function decrypt(text){
     var decipher = crypto.createDecipher(algorithm,password)
     var dec = decipher.update(text,'hex','utf8')

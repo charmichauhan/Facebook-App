@@ -4,9 +4,10 @@ var likes = require('./likes')
 var comments = require('./comments')
 var userDataSchema = new mongoose.Schema({
     userId:{type: mongoose.Schema.Types.ObjectId, ref: 'User'},
-    originalname: {type: String, required: true, unique: true},
+    originalname: {type: String},
     commentId:[{type: mongoose.Schema.Types.ObjectId, ref: 'comments'}],
     likeId:{type: mongoose.Schema.Types.ObjectId, ref:'likes'},
+    frdId:{type: mongoose.Schema.Types.ObjectId, ref: 'User'},
     createdAt: { type: Date, required: true, default: Date.now},
     isApprove:{ type: Boolean, default: false }
 });

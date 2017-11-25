@@ -17,3 +17,4 @@ function error(message) {
 function clear() {
     return { type: userConstants.CLEAR };
 }
+

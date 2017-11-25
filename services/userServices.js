@@ -1,4 +1,5 @@
 import { authHeader } from './authHeader';
+import {reactLocalStorage} from 'reactjs-localstorage';
 
 export const userService = {
     login,
@@ -73,7 +74,9 @@ function getById(_id) {
 }
 
 function update(user) {
-   //const {user} = this.props;
+
+    const user1 = reactLocalStorage.getObject('user');
+    console.log('username', user1.user.username)
     //console.log('user---', user)
     const requestOptions = {
         method: 'PUT',
@@ -81,7 +84,7 @@ function update(user) {
         body: JSON.stringify(user)
     };
     debugger
-    return fetch('http://localhost:5000/data/' + user._id, requestOptions).then(handleResponse);
+    return fetch('http://localhost:5000/data/' + user1.user._id, requestOptions).then(handleResponse);
 }
 
 // prefixed function name with underscore because delete is a reserved word in javascript
@@ -93,20 +96,26 @@ function Delete(_id) {
     return fetch('http://localhost:5000/data/' + _id, requestOptions).then(handleResponse);
 }
 
-function likes(counts) {
+function likes() {
     const requestOptions = {
-    method: 'likes',
-    headers: authHeader()
+        method: 'POST',
+        headers: authHeader(),
+        //body: JSON.stringify()
     }
-    return fetch('http://localhost:5000/likes', requestOptions).then(handleResponse)
+    debugger
+    return fetch('http://localhost:5000/postLikes', requestOptions).then(handleResponse)
 }
-function comments() {
+
+function comments(comment) {
     const requestOptions = {
-        method: 'comments',
-        headers: authHeader()
+        method: 'POST',
+        headers: authHeader(),
+        body: JSON.stringify(comment)
     }
+    debugger
     return fetch('http://localhost:5000/comments', requestOptions).then(handleResponse)
 }
+
 function handleResponse(response) {
     if (!response.ok) {
         return Promise.reject(response.statusText);
