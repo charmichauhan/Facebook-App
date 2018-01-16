@@ -1,7 +1,5 @@
 var mongoose = require('mongoose');
 //var bcrypt = require('bcrypt');
-var passport = require('passport');
-var LocalStrategy = require('passport-local').Strategy;
 
 var loginSchema = new mongoose.Schema({
     email: {
@@ -9,7 +7,7 @@ var loginSchema = new mongoose.Schema({
         //unique: true,
         required: true,
         trim: true
-    },  
+    },
     password: {
         type: String,
         required: true

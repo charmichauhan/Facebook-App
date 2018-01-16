@@ -9,7 +9,7 @@ import MenuItem from 'material-ui/MenuItem';
 import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
 import Avatar from 'material-ui/Avatar';
 import Profile from "./Profile";
-import {bindActionCreators} from 'redux'
+import {bindActionCreators} from 'redux';
 import FontIcon from 'material-ui/FontIcon';
 import IconButton from 'material-ui/IconButton';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
@@ -24,6 +24,7 @@ const styles = {
         width: 100
     },
 };
+
 class Dashboard extends React.Component {
     constructor(props) {
         super(props);
@@ -48,6 +49,7 @@ class Dashboard extends React.Component {
             muiTheme: getMuiTheme()
         }
     }
+
     handleChangeSingle = (event, value) => {
         this.setState({
             valueSingle: value,
@@ -85,9 +87,8 @@ class Dashboard extends React.Component {
                     <Tab
                         styles={styles.headline}
                          icon= { <Avatar
-                             src={user.user.image} />}
-                        label={user.user.username}
-                    >
+                                        src={user.user.image} />}
+                                        label={user.user.username}>
                         <Profile/>
                     </Tab>
                 </Tabs>

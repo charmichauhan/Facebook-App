@@ -34,29 +34,12 @@ var _ = require('lodash');
 // app.set('', __dirname + 'index.html');
  // app.engine('html', require('ejs').renderFile);
  // app.set('view engine', 'html');
-
 app.use(cors())
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, '')));
-
-// app.use(function (req, res, next) {
-//
-//     // Website you wish to allow to connect
-//     res.setHeader('Access-Control-Allow-Origin', 'http://localhost:8888');
-//     // Request methods you wish to allow
-//     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-//     // Request headers you wish to allow
-//     res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
-//     // Set to true if you need the website to include cookies in the requests sent
-//     // to the API (e.g. in case you use sessions)
-//     res.setHeader('Access-Control-Allow-Credentials', true);
-//     // Pass to next layer of middleware
-//     next();
-// });
-
 //******** multer **********
 
 var storage = multer.diskStorage({
@@ -146,7 +129,7 @@ app.post('/data',upload.any('originalname'), function(req, res) {
                             }
                         });
                         console.log(newUser.token)
-                        const verifyLink = 'http://localhost:5000/verification/' + newUser.token;
+                        const verifyLink = 'http://localhost:5000/forgot_password/' + newUser.token;
                         var mailOptions = {
                             from: 'lanetteam.charmic@gmail.com',
                             to: 'lanetteam.charmic@gmail.com',
@@ -379,7 +362,7 @@ app.post('/forgot_password', function(req, res, next) {
          });
          User.token = randtoken.generate(32);
          console.log('result-token', User.token);
-         const verifyLink = 'http://localhost:4000/forgot_password/' + User.token;
+         const verifyLink = 'http://localhost:5000/forgot_password/' + User.token;
          console.log('email',email);
          var mailOptions = {
              from: 'lanetteam.charmic@gmail.com',
@@ -491,7 +474,7 @@ app.post('/uploadData',upload.any('originalname'),function (req,res) {
     test1.originalname = path;
 
     const uploadPost = new userData();
-        uploadPost.originalname = 'http://localhost:5000/images/' +imageName;
+        uploadPost.originalname = 'http://localhost:6500/images/' +imageName;
         // uploadpost.title = req.body.title;
         // uploadpost.description=req.body.description;
         uploadPost.userId = req.params.id;
@@ -721,17 +704,17 @@ app.delete('delete_acct/username', function(req, res) {
     User.remove({username: req.params.username},function (err,test1) {
         if(err)
         {
-            console.log("# API delete Error",err);
+            console.log(" API delete Error",err);
         }
         res.json(test1);
     });
 });
 
-app.listen(5000,function (err) {
+app.listen(6500,function (err) {
     if(err){
         return console.log(err);
     }
-    console.log("API Server Is running on 5000");
+    console.log("API Server Is running on 6500");
 });
 module.exports = app;
 

@@ -1,5 +1,4 @@
 import React from 'react';
-import { Link } from 'react-router';
 import { connect } from 'react-redux';
 import { getById} from "../actions/userActions";
 import {bindActionCreators} from 'redux'
@@ -13,14 +12,13 @@ const customContentStyle = {
 };
 class Profile extends React.Component {
     constructor(props){
-        super()
+        super(props)
         this.state ={
             open: false
         }
         this.handleSubmit1 = this.handleSubmit1.bind(this);
         this.handleOpen = this.handleOpen.bind(this)
         this.handleClose = this.handleClose.bind(this)
-
     }
     handleUser(_id){
         debugger

@@ -20,7 +20,7 @@ function login(email, password) {
         body: JSON.stringify({ email, password })
     };
     debugger
-    return fetch('http://localhost:5000/login/data', requestOptions)
+    return fetch('http://localhost:6500/login/data', requestOptions)
         .then(response => {
             if (!response.ok) {
                 return Promise.reject(response.statusText);
@@ -52,7 +52,7 @@ function register(user) {
         body: JSON.stringify(user)
     };
     debugger
-    return fetch('http://localhost:5000/data', requestOptions).then(handleResponse);
+    return fetch('http://localhost:6500/data', requestOptions).then(handleResponse);
 }
 
 function getAll() {
@@ -61,7 +61,7 @@ function getAll() {
         headers: authHeader()
     };
     debugger
-    return fetch('http://localhost:5000/data', requestOptions).then(handleResponse);
+    return fetch('http://localhost:6500/data', requestOptions).then(handleResponse);
 }
 
 function getById(_id) {
@@ -70,7 +70,7 @@ function getById(_id) {
          headers: authHeader()
     };
      debugger
-     return fetch('http://localhost:5000/data/' + _id, requestOptions).then(handleResponse);
+     return fetch('http://localhost:6500/data/' + _id, requestOptions).then(handleResponse);
 }
 
 function update(user) {
@@ -84,7 +84,7 @@ function update(user) {
         body: JSON.stringify(user)
     };
     debugger
-    return fetch('http://localhost:5000/data/' + user1.user._id, requestOptions).then(handleResponse);
+    return fetch('http://localhost:6500/data/' + user1.user._id, requestOptions).then(handleResponse);
 }
 
 // prefixed function name with underscore because delete is a reserved word in javascript
@@ -93,7 +93,7 @@ function Delete(_id) {
         method: 'DELETE',
          headers: authHeader()
     };
-    return fetch('http://localhost:5000/data/' + _id, requestOptions).then(handleResponse);
+    return fetch('http://localhost:6500/data/' + _id, requestOptions).then(handleResponse);
 }
 
 function likes() {
@@ -103,7 +103,7 @@ function likes() {
         //body: JSON.stringify()
     }
     debugger
-    return fetch('http://localhost:5000/postLikes', requestOptions).then(handleResponse)
+    return fetch('http://localhost:6500/postLikes', requestOptions).then(handleResponse)
 }
 
 function comments(comment) {
@@ -113,7 +113,7 @@ function comments(comment) {
         body: JSON.stringify(comment)
     }
     debugger
-    return fetch('http://localhost:5000/comments', requestOptions).then(handleResponse)
+    return fetch('http://localhost:6500/comments', requestOptions).then(handleResponse)
 }
 
 function handleResponse(response) {

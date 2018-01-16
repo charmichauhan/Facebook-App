@@ -22,10 +22,10 @@
     "jsdom": "^8.1.0",
     "mocha": "^2.4.5",
     "react-addons-test-utils": "^0.14.7",
-    "webpack": "^1.12.9",
     "webpack-dev-server": "^1.14.0"
   },
   "dependencies": {
+    "webpack": "^1.12.9",
     "axios": "^0.17.0",
     "babel-preset-stage-1": "^6.1.18",
     "bcrypt": "1.0.3",

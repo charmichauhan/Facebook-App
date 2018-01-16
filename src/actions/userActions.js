@@ -77,7 +77,6 @@ export const register=(user)=> {
     function success(users) { return { type: userConstants.GETALL_SUCCESS, users } }
     function failure(error) { return { type: userConstants.GETALL_FAILURE, error } }
 }
-
 export const getById=(_id)=> {
     return dispatch => {
         dispatch(request(_id));

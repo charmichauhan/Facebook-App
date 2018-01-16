@@ -18,7 +18,7 @@ class Registration extends React.Component{
             },
             submitted: false,
         };
-        this.onChange = this.onChange.bind(this)
+        this.onChange = this.onChange.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
@@ -33,15 +33,6 @@ class Registration extends React.Component{
             }
         });
     }
-        // console.log('submit', this.state.submitted)
-        //  console.log('user', this.state.user)
-        // reactLocalStorage.setObject('username',  this.refs.name.value);
-        // reactLocalStorage.setObject('email', this.refs.email.value);
-        // reactLocalStorage.setObject('role', this.refs.role.value);
-        // this.setState({ submitted: true })
-        // if(this.state.submitted === true) {
-        //     this.props.history.push('/login')
-        //}
         handleSubmit(event) {
             event.preventDefault();
             this.setState({ submitted: true });
